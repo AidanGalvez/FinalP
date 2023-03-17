@@ -1,3 +1,4 @@
+
 location = "Outside"
 
 def outside1(rooms,location):
@@ -97,4 +98,3 @@ while True:
     if location == "Class1":
         location = class1(rooms, location)
 
-        
