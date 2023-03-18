@@ -1,3 +1,4 @@
+
 location = "Outside"
 
 def outside1(rooms,location):
