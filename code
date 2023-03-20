@@ -163,10 +163,74 @@ def class2(rooms, location):
         location = "SecondFloorr"
     return location
 
+def thirdfloor(rooms, location):
+    print("\n       __________________________________\n       |           |             |      |\n       |   Office                |_/  \_|_____\n       |           |                  Stairs |\n_______|___________|                         |________|/\|_____\n|                            X                         Ladder |\n|                        ThirdFloor                           |\n|_____ _______________________________________________________|\n   __| |_____\n   |        |\n   |   C4   |\n   |        |\n   |________|\n")
+    print(rooms["ThirdFloor"])
+    choice = input("\nWhere would you like to go?\n")
+    while choice != "left" and choice != "right" and choice != "forward":
+        choice = input("\nWhere would you like to go?\n")
+    if choice == "left":
+        location = "ThirdFloorl"
+    if choice == "right":
+        location = "ThirdFloorr"
+    if choice == "forward":
+        location = "Stairs3"
+    return location
+
+def stairs3(rooms, location):
+    print("\n       __________________________________\n       |           |             |      |\n       |   Office                |_/  \_|_____\n       |           |                X  Stairs |\n_______|___________|                         |________|/\|_____\n|                                                      Ladder |\n|                        ThirdFloor                           |\n|_____ _______________________________________________________|\n   __| |_____\n   |        |\n   |   C4   |\n   |        |\n   |________|\n")
+    print(rooms["Stairs"])
+    choice = input("\nWould you like to go to the office(right), return to the middle of the third floor(back), or down the stairs?(down)\n")
+    while choice != "left" and choice != "back" and choice !="down":
+        choice = input("\nWould you like to go to the office(left), return to the middle of the third floor(back), or down the stairs?(down)\n")
+    if choice == "back":
+        location = "ThirdFloor"
+    if choice == "down":
+        location = "SecondFloor" 
+    if choice == "left":
+        location = "Office"
+    return location
+
+def thirdfloorl(rooms, location):
+    print("\n       __________________________________\n       |           |             |      |\n       |   Office                |_/  \_|_____\n       |           |                   Stairs |\n_______|___________|                         |________|/\|_____\n|                                                      Ladder |\n|       X                ThirdFloor                           |\n|_____ _______________________________________________________|\n   __| |_____\n   |        |\n   |   C4   |\n   |        |\n   |________|\n")
+    print(rooms["ThirdFloorl"])
+    choice = input("\nWould you like to go to class(left), or return back to the center of the third floor?(back)\n")
+    while choice != "left" and choice !="back":
+        choice = input("\nWould you like to go to class(left), or return back to the center of the third floor?(back)\n")
+    if choice == "left":
+        location = "Class4"
+    if choice == "back":
+        location = "ThirdFloor"
+    return location
+
+def thirdfloorr(rooms, location):
+    print("\n       __________________________________\n       |           |             |      |\n       |   Office                |_/  \_|_____\n       |           |                  Stairs |\n_______|___________|                         |________|/\|_____\n|                                                      Ladder |\n|                        ThirdFloor                   X       |\n|_____ _______________________________________________________|\n   __| |_____\n   |        |\n   |   C4   |\n   |        |\n   |________|\n")
+    print(rooms["ThirdFloorr"])
+    choice = input("\nWould you like to go up the ladder(up) or return back to the center of the third floor?(back)\n")
+    while choice != "up" and choice != "back":
+        choice = input("\nWould you like to go up the ladder(up) or return back to the center of the third floor?(back)\n")
+    if choice == "up":
+        location = "LadderTroubles"
+    if choice == "back":
+        location = "ThirdFloor"
+    return location
+
+def office(rooms, location):
+    print("\n       __________________________________\n       |           |             |      |\n       |   Office                |_/  \_|_____\n       |     X     |                  Stairs |\n_______|___________|                         |________|/\|_____\n|                                                      Ladder |\n|                        ThirdFloor                           |\n|_____ _______________________________________________________|\n   __| |_____\n   |        |\n   |   C4   |\n   |        |\n   |________|\n")
+    print(rooms["Office"])
+    choice = input("\nWould you like to leave the office?(back)\n")
+    while choice != "back":
+        choice = input("\nWould you like to leave the office?(back)\n")
+    if choice == "back":
+        location = "Stairs3"
+    return location
+
+
+
 print("Welcome to School!\n\nYou get to school and a lockdown happens causing you to be stuck at school, you are stuck at school for 2 months.\nYou have to find a way to get back home before then, the teachers might forget the time if you take all the clocks in the school. It probably won't work but it is the best idea you have got so you go with it.")
 print("\nObjective: Collect all 10 clocks and escape school")
 print("Controls(lowercase): Up, Down, Left, Right, Forward, Down, Grab, Use\n")
-rooms = {"Outside": "You are outside of school looking up at the building regretting showing up, you can go into the school (forward) or try to leave (back).", "MainArea": "You are in the main area, there are lunch tables with people working on their homework before class. You see a store in the corner of the room that sells various items that may help you get through the day (left). You also see stairs in front of you that lead upstairs(forward). To the very right of the main area you can see the gym (right).", "Store": "There is mostly junk in here but they do have gummies I can buy. You see a clock on the wall out of the corner of your eye.", "Gym": "You enter the gym which is full of equipment and there is someone doing calf raises in the corner, they look thirsty. You also see your first period class P.E. in front of you (forward). You can also return to the main area (left).", "Class4": "You enter your English class where the teacher is reciting Shakespear and running over everyone in his electric wheel chair. There is a clock very low on the wall so your teacher can check the time without looking up.","Stairs":"You are next to the stairs","SecondFloor": "You are on the second floor, there isn't much here besides two halls of classes and a lot of windows. Your second class is in the right hall(right). Your third class is in the left hallway(left). The stairs and the outside area are in front of you(forward).","Outside2": "You are outside on the second floor, maybe if you try to leave from here no one will notice?", "Class2": "You enter Math class where there is a bunch of cheesy math jokes on the wall and the board is covered in formulas beyond comprehension. There is a clock in here as well but it seems to be covered in math posters." , "Class3": "You enter science with a teacher that looks like modern day Einstein mixing chemicals that are bubbling a little to much. There is another clock in here but it is covered in chemicals that might be dangerous to touch (you should get something to clean the clock off).", "ThirdFloor": "You enter the third floor where the office is in front of you, there are also two halls to either side of you. (Up)(Left)(Right)", "Ladder":"There is a ladder that goes to the roof, the only problem is you need a key to access the roof", "Office":"You enter the office where the principle and vice principle are haning out.", "Class1": "You enter P.E. and you find your teacher pushing the ground down in order to do a push-up." , "Roof":"You manage to get onto the roof, there is nothing up here besides a vent.(Forward)(Back).", "SecondFloorl": "You are in the left hall of the second floor, your third class is to your right.(right)", "SecondFloorr": "You are in the right hall of the second floor, your second class is to your right.(right)"}
+rooms = {"Outside": "You are outside of school looking up at the building regretting showing up, you can go into the school (forward) or try to leave (back).", "MainArea": "You are in the main area, there are lunch tables with people working on their homework before class. You see a store in the corner of the room that sells various items that may help you get through the day (left). You also see stairs in front of you that lead upstairs(forward). To the very right of the main area you can see the gym (right).", "Store": "There is mostly junk in here but they do have gummies I can buy. You see a clock on the wall out of the corner of your eye.", "Gym": "You enter the gym which is full of equipment and there is someone doing calf raises in the corner, they look thirsty. You also see your first period class P.E. in front of you (forward). You can also return to the main area (left).", "Class4": "You enter your English class where the teacher is reciting Shakespear and running over everyone in his electric wheel chair. There is a clock very low on the wall so your teacher can check the time without looking up.","Stairs":"You are next to the stairs","SecondFloor": "You are on the second floor, there isn't much here besides two halls of classes and a lot of windows. Your second class is in the right hall(right). Your third class is in the left hallway(left). The stairs and the outside area are in front of you(forward).","Outside2": "You are outside on the second floor, maybe if you try to leave from here no one will notice?", "Class2": "You enter Math class where there is a bunch of cheesy math jokes on the wall and the board is covered in formulas beyond comprehension. There is a clock in here as well but it seems to be covered in math posters." , "Class3": "You enter science with a teacher that looks like modern day Einstein mixing chemicals that are bubbling a little to much. There is another clock in here but it is covered in chemicals that might be dangerous to touch (you should get something to clean the clock off).", "ThirdFloor": "You enter the third floor where the office is in front of you, there are also two halls to either side of you.", "Ladder":"There is a ladder that goes to the roof, the only problem is you need a key to access the roof", "Office":"You enter the office where the principle and vice principle are haning out.", "Class1": "You enter P.E. and you find your teacher pushing the ground down in order to do a push-up." , "Roof":"You manage to get onto the roof, there is nothing up here besides a vent.(Forward)(Back).", "SecondFloorl": "You are in the left hall of the second floor, your third class is to your right.(right)", "SecondFloorr": "You are in the right hall of the second floor, your second class is to your right.(right)", "ThirdFloorr": "You are in the right hall of the third floor, there is a ladder to your left.(left)", "ThirdFloorl": "You are in the left hall of the third floor, your fourth class is to your left.(left)"}
 
 location = outside1(rooms,location)
 print()
@@ -195,3 +259,13 @@ while True:
         location = stairs2(rooms, location)
     if location == "Outside2":
         location = outside2(rooms, location)
+    if location == "ThirdFloor":
+        location = thirdfloor(rooms, location)
+    if location == "Stairs3":
+        location = stairs3(rooms, location)
+    if location == "ThirdFloorl":
+        location = thirdfloorl(rooms, location)
+    if location == "ThirdFloorr":
+        location = thirdfloorr(rooms, location)
+    if location == "Office":
+        location = office(rooms, location)
