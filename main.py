@@ -5,7 +5,6 @@ print("Controls: up, down, left, right, forward, back, grab, use, inventory, and
 
 movement = ["up","down","left","right","forward","back"]
 other = ["grab","use","inventory","controls"]
-
 print(Outside)
 
 class Player:
@@ -15,9 +14,28 @@ class Player:
     def move(self, direction):
         connections = {
             "Outside": {"forward": "MainArea", "back": "MainArea"},
-            "MainArea": {"back": "Outside", "left": "Store", "right": "Gym"},
+            "MainArea": {"back": "Outside", "left": "Store", "right": "Gym", "forward": "Stairs"},
             "Store": {"back": "MainArea"},
-            "Gym": {"left": "MainArea"}
+            "Gym": {"left": "MainArea", "forward": "Physical"},
+            "English": {"forward": "ThirdFloorLH"},
+            "Stairs": {"up": "SecondFloor"},
+            "Stairs2": {"up": "ThirdFloor", "down": "MainArea", "left": "SecondFloorP2"},
+            "Stairs3": {"down": "SecondFloor", "left": "ThirdFloorP2"},
+            "SecondFloor": {"left": "SecondFloorLH", "right": "SecondFloorRH","forward": "SecondFloorP2"},
+            "SecondFloorP2": {"forward": "Outside2", "right": "Stairs2", "back": "SecondFloor"},
+            "Outside2": {"back": "SecondFloorP2", "forward" : "SecondFloorP2"},
+            "Math": {"forward": "SecondFloorRH"},
+            "Science": {"back": "SecondFloorLH"},
+            "ThirdFloor": {"left": "ThirdFloorLH", "right": "ThirdFloorRH", "forward": "ThirdFloorP2"},
+            "ThirdFloorP2":{"left": "Office", "right": "Stairs3", "back" : "ThirdFloor"},
+            "Ladder": {"up": "Roof", "back": "ThirdFloorRH"},
+            "Office": {"right": "ThirdFloorP2"},
+            "Physical": {"back": "Gym"},
+            "Roof": {"down": "ThirdFloorRH"},
+            "SecondFloorLH": {"forward": "Science", "right": "SecondFloor"},
+            "SecondFloorRH": {"back": "Math", "left": "SecondFloor"},
+            "ThirdFloorRH": {"forward": "Ladder", "left": "ThirdFloor"},
+            "ThirdFloorLH": {"back": "English", "right": "ThirdFloor"},
         
         }
         
@@ -32,8 +50,43 @@ class Player:
                 print(Store)
             if location == "Gym":
                 print(Gym)
-        if direction not in connections[self.current_room] and direction not in other:
-            print("\nYou cannot go that direction\n")
+            if location == "English":
+                print(English)
+            if location == "Stairs" or location == "Stairs2" or location == "Stairs3":
+                print(Stairs)
+            if location == "SecondFloor":
+                print(SecondFloor)
+            if location == "SecondFloorP2":
+                print(SecondFloorP2)
+            if location == "Outside2":
+                print(Outside2)
+            if location == "Math":
+                print(Math)
+            if location == "Science":
+                print(Science)
+            if location == "ThirdFloor":
+                print(ThirdFloor)
+            if location == "ThirdFloorP2":
+                print(ThirdFloorP2)
+            if location == "Ladder":
+                print(Ladder)
+            if location == "Office":
+                print(Office)
+            if location == "Physical":
+                print(Physical)
+            if location == "Roof":
+                print(Roof)
+            if location == "SecondFloorLH":
+                print(SecondFloorLH)
+            if location == "SecondFloorRH":
+                print(SecondFloorRH)
+            if location == "ThirdFloorRH":
+                print(ThirdFloorRH)
+            if location == "ThirdFloorLH":
+                print(ThirdFloorLH)
+
+        # if direction not in connections[self.current_room] and direction not in other:
+            # print("\nYou cannot go that direction\n")
 
 player = Player("Outside")
 while True:
