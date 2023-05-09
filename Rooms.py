@@ -28,9 +28,8 @@ class Inventory:
     
     def __iter__(self):
         return iter(self.__items)
-
 class Player:
-    def __init__(self, starting_room):
+    def __init__(self, starting_room, clockcount):
         self.current_room = starting_room
         self.inventory = Inventory()
         self.clockcount = []
@@ -38,7 +37,6 @@ class Player:
         self.item_used = []
     
     def playerchoice(self):
-        inventory = Inventory()
         choice = input("What would you like to do?\n").lower()
         while choice not in ["up", "down", "left", "right", "forward", "back", "grab", "use", "inventory", "controls"]:
             print(f'"{choice}" is not a valid option\n')
@@ -103,6 +101,18 @@ class Player:
                 print(f"\nYou have collected the Bully clock!\n")
             else:
                 print("\nYou don't have the gummies he wants, better leave before he decides to fight.\n")
+
+        elif self.current_room == "Office":
+            if "Physical Ticket" in self.inventory and "Science Ticket" in self.inventory and "English Ticket" in self.inventory and "Math Ticket" in self.inventory:
+                self.inventory.remove_item("Physical Ticket")
+                self.inventory.remove_item("Science Ticket")
+                self.inventory.remove_item("English Ticket")
+                self.inventory.remove_item("Math Ticket")
+                print("\nYou traded all your tickets in for a battery\n")
+                self.inventory.add_item("battery")
+            else:
+                print("\nYou don't have all the tickets required\n")
+
         else:
             print("\nThere is nothing to use in this room\n")
         
@@ -116,7 +126,6 @@ class Player:
                 self.clockcount.append("Roof clock")
             else:
                 None
-
 
     def grab_item(self):
         if self.current_room == "Physical" or self.current_room == "English" or self.current_room == "Office" or self.current_room == "Math" or self.current_room == "Store":
@@ -202,7 +211,7 @@ class Player:
             "ThirdFloorLH": {"back": "English", "right": "ThirdFloor"},
         
         }
-        
+    
         if direction not in connections[self.current_room]:
             if direction not in ["use", "grab", "inventory", "controls"]:
                 print("\nYou cannot go that direction\n")
@@ -213,8 +222,65 @@ class Player:
                     "Ladder", "Office", "Physical", "Roof", "RoofP2", "SecondFloorLH", "SecondFloorRH", "ThirdFloorRH", "Janitor", "ThirdFloorLH"]
         if self.current_room in locations:
             print(eval(self.current_room))
+            if self.current_room == "Physical" and "Physical Ticket" not in self.inventory:
+                physical_teacher = Teacher("Mr. Strong", "Physical")
+                ticket = physical_teacher.ask_question()
+                if ticket:
+                    self.inventory.add_item(ticket)
+                    print(f"\nYou have collected the {ticket}!\n")
+            elif self.current_room == "English" and "English Ticket" not in self.inventory:
+                english_teacher = Teacher("Mr. Beakholt", "English")
+                ticket = english_teacher.ask_question()
+                if ticket:
+                    self.inventory.add_item(ticket)
+                    print(f"\nYou have collected the {ticket}!\n")
+            elif self.current_room == "Math" and "Math Ticket" not in self.inventory:
+                math_teacher = Teacher("Mrs. S", "Math")
+                ticket = math_teacher.ask_question()
+                if ticket:
+                    self.inventory.add_item(ticket)
+                    print(f"\nYou have collected the {ticket}!\n")
+            elif self.current_room == "Science" and "Science Ticket" not in self.inventory:
+                science_teacher = Teacher("Mrs. T", "Science")
+                ticket = science_teacher.ask_question()
+                if ticket:
+                    self.inventory.add_item(ticket)
+                    print(f"\nYou have collected the {ticket}!\n")
         else:
             print("broken")
+
+class Teacher:
+    def __init__(self, name, subject):
+        self.name = name
+        self.subject = subject
+        self.inventory = Inventory()
+
+    def ask_question(self):
+        if self.subject == "Math":
+            question = f"{self.name} asks: What is 9 + 3?\n"
+            correct_answer = "12"
+        elif self.subject == "Science":
+            question = f"{self.name} asks: What is the color of the sky?\n"
+            correct_answer = "blue"
+        elif self.subject == "English":
+            question = f"{self.name} asks: What is the correct form of there/they're/their as it is used in this sentence. That is ____ candy that they stole from the superstore.\n"
+            correct_answer = "their"
+        elif self.subject == "Physical":
+            question = f"{self.name} asks: how many holes does a bowling ball have?\n"
+            correct_answer = "3"
+        else:
+            question = f"{self.name} asks: Answer\n"
+            correct_answer = ""
+
+        while True:
+            answer = input(question)
+            if answer.lower() == correct_answer.lower():
+                print("Correct!")
+                return f"{self.subject} Ticket"
+                break
+            else:
+                print("Incorrect! Try again.")
+
 
 # rooms and definitions
 Outside = Room("Outside", "You are outside of school looking up at the building regretting showing up, you can go into the school or try to leave.")
