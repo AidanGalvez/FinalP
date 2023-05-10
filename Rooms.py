@@ -1,3 +1,4 @@
+import pickle
 class Room:
     def __init__(self, name, description, items = []):
         self.__name = name
@@ -28,6 +29,7 @@ class Inventory:
     
     def __iter__(self):
         return iter(self.__items)
+        
 class Player:
     def __init__(self, starting_room, clockcount):
         self.current_room = starting_room
@@ -37,8 +39,9 @@ class Player:
         self.item_used = []
     
     def playerchoice(self):
+        player_quit = False
         choice = input("What would you like to do?\n").lower()
-        while choice not in ["up", "down", "left", "right", "forward", "back", "grab", "use", "inventory", "controls"]:
+        while choice not in ["up", "down", "left", "right", "forward", "back", "grab", "use", "save", "load", "quit", "inventory", "controls"]:
             print(f'"{choice}" is not a valid option\n')
             choice = input("\nWhat would you like to do?\n").lower()
         if choice == "inventory":
@@ -48,8 +51,14 @@ class Player:
             self.use_item()
         if choice == "grab":
             self.grab_item()
+        if choice == "save":
+            self.save_game()
+        if choice == "load":
+            self.load_game()
+        if choice == "quit":
+            player_quit = True
         if choice == "controls":
-            print(f"\nControls: up, down, left, right, forward, back, grab, use, inventory, and controls\nObjective: Collect all 10 clocks and escape school\nTotal clocks collected: {len(self.clockcount)}")
+            print(f"\nControls: up, down, left, right, forward, back, grab, use, save, load, quit, inventory, and controls\nObjective: Collect all 10 clocks and escape school\nTotal clocks collected: {len(self.clockcount)}")
             print("|Clocks collected|")
             for clock in self.clockcount:
                 print(f"•{clock}")
@@ -63,7 +72,44 @@ class Player:
                 print(f"\nYou have collected the Outside clock!\n")
             else:
                 print("\n\nYou try running away on the second floor hoping no one would see you, however someone driving in a golf cart found you and threw you back inside")
-        return choice
+        return choice, player_quit
+
+    def save_game(self):
+        save_data = {
+            "current_room": self.current_room,
+            "clockcount": self.clockcount,
+            "inventory": self.inventory
+        }
+        filename = 'game_saved'
+
+        with open(filename, 'wb') as file:
+            pickle.dump(save_data, file)
+
+        print(f"Game saved as '{filename}'.")
+
+    def load_game(self):
+        filename = 'game_saved'
+
+        try:
+            with open(filename, 'rb') as file:
+                save_data = pickle.load(file)
+
+            player = Player(save_data["current_room"], save_data["clockcount"])
+            loaded_player = Player(save_data["current_room"], save_data["clockcount"])
+            self.current_room = loaded_player.current_room
+            self.clockcount = loaded_player.clockcount
+            self.inventory = loaded_player.inventory
+
+            self.clockcount = save_data["clockcount"]
+            self.inventory = save_data["inventory"]
+
+            print(f"Game loaded from '{filename}'.")
+            print(self.clockcount)
+            return loaded_player
+
+        except FileNotFoundError:
+            print("No saved game file found.")
+            return None
     
     def use_item(self):
         if self.current_room == "Store":
@@ -189,8 +235,8 @@ class Player:
             "Store": {"back": "Cafeteria"},
             "Gym": {"left": "MainArea", "forward": "Physical"},
             "English": {"forward": "ThirdFloorLH"},
-            "Stairs": {"up": "SecondFloor", "back": "MainArea"},
-            "Stairs2": {"up": "ThirdFloor", "down": "MainArea", "left": "SecondFloorP2"},
+            "Stairs": {"up": "SecondFloor", "left": "Cafeteria"},
+            "Stairs2": {"up": "ThirdFloor", "down": "Cafeteria", "left": "SecondFloorP2"},
             "Stairs3": {"down": "SecondFloor", "left": "ThirdFloorP2"},
             "SecondFloor": {"left": "SecondFloorLH", "right": "SecondFloorRH", "forward": "SecondFloorP2"},
             "SecondFloorP2": {"forward": "Outside2", "right": "Stairs2", "back": "SecondFloor"},
@@ -213,7 +259,7 @@ class Player:
         }
     
         if direction not in connections[self.current_room]:
-            if direction not in ["use", "grab", "inventory", "controls"]:
+            if direction not in ["use", "grab", "inventory", "controls", "save", "load", "quit"]:
                 print("\nYou cannot go that direction\n")
             return 
         self.current_room = connections[self.current_room][direction]
@@ -222,29 +268,33 @@ class Player:
                     "Ladder", "Office", "Physical", "Roof", "RoofP2", "SecondFloorLH", "SecondFloorRH", "ThirdFloorRH", "Janitor", "ThirdFloorLH"]
         if self.current_room in locations:
             print(eval(self.current_room))
-            if self.current_room == "Physical" and "Physical Ticket" not in self.inventory:
+            if self.current_room == "Physical" and "Physical Ticket" not in self.item_grabbed:
                 physical_teacher = Teacher("Mr. Strong", "Physical")
                 ticket = physical_teacher.ask_question()
                 if ticket:
                     self.inventory.add_item(ticket)
+                    self.item_grabbed.append(ticket)
                     print(f"\nYou have collected the {ticket}!\n")
-            elif self.current_room == "English" and "English Ticket" not in self.inventory:
+            elif self.current_room == "English" and "English Ticket" not in self.item_grabbed:
                 english_teacher = Teacher("Mr. Beakholt", "English")
                 ticket = english_teacher.ask_question()
                 if ticket:
                     self.inventory.add_item(ticket)
+                    self.item_grabbed.append(ticket)
                     print(f"\nYou have collected the {ticket}!\n")
-            elif self.current_room == "Math" and "Math Ticket" not in self.inventory:
+            elif self.current_room == "Math" and "Math Ticket" not in self.item_grabbed:
                 math_teacher = Teacher("Mrs. S", "Math")
                 ticket = math_teacher.ask_question()
                 if ticket:
                     self.inventory.add_item(ticket)
+                    self.item_grabbed.append(ticket)
                     print(f"\nYou have collected the {ticket}!\n")
-            elif self.current_room == "Science" and "Science Ticket" not in self.inventory:
+            elif self.current_room == "Science" and "Science Ticket" not in self.item_grabbed:
                 science_teacher = Teacher("Mrs. T", "Science")
                 ticket = science_teacher.ask_question()
                 if ticket:
                     self.inventory.add_item(ticket)
+                    self.item_grabbed.append(ticket)
                     print(f"\nYou have collected the {ticket}!\n")
         else:
             print("broken")
