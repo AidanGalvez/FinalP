@@ -78,9 +78,11 @@ class Player:
         save_data = {
             "current_room": self.current_room,
             "clockcount": self.clockcount,
-            "inventory": self.inventory
+            "inventory": self.inventory,
+            "item_grabbed": self.item_grabbed,
+            "item_used": self.item_used
         }
-        filename = 'game_saved'
+        filename = "savefile"
 
         with open(filename, 'wb') as file:
             pickle.dump(save_data, file)
@@ -88,7 +90,7 @@ class Player:
         print(f"Game saved as '{filename}'.")
 
     def load_game(self):
-        filename = 'game_saved'
+        filename = "savefile"
 
         try:
             with open(filename, 'rb') as file:
@@ -99,12 +101,19 @@ class Player:
             self.current_room = loaded_player.current_room
             self.clockcount = loaded_player.clockcount
             self.inventory = loaded_player.inventory
+            self.item_grabbed = loaded_player.item_grabbed
+            self.item_used = loaded_player.item_used
 
+            self.item_grabbed = save_data["item_grabbed"]
+            self.item_used = save_data["item_used"]
             self.clockcount = save_data["clockcount"]
             self.inventory = save_data["inventory"]
 
             print(f"Game loaded from '{filename}'.")
-            print(self.clockcount)
+            print(f"Location: {self.current_room}\nClockCount: {len(self.clockcount)}")
+            print("Inventory:")
+            for item in self.inventory:
+                print(f"-{item}")
             return loaded_player
 
         except FileNotFoundError:
@@ -129,6 +138,8 @@ class Player:
                 print("\nYou gave the water bottle to the person working out\nThey jumped up and grabbed you the clock as an appreciation")
                 self.clockcount.append(f"{self.current_room} clock")
                 print()
+            elif "Gym clock" in self.clockcount:
+                print("\nYou already gave the person water and they are no longer thirsty.\n")
             else:
                 print("\nThe person looks thirsty maybe you should bring them some water?\n")
 
@@ -139,9 +150,9 @@ class Player:
                 print("\nYou have cleaned the chemicals off the clock, would you like to grab the clock?\n")
 
         elif self.current_room == "ThirdFloorRH":
-            if "Gummies" not in self.item_grabbed:
+            if "Gummies" in self.inventory and "Gummies" not in self.item_used:
                 self.inventory.remove_item("Gummies")
-                self.item_grabbed.append("Gummies")
+                self.item_used.append("Gummies")
                 self.clockcount.append(f"Bully clock")
                 print("\nYou give the bully the gummies and in return he gives you a clock he stole.\n")
                 print(f"\nYou have collected the Bully clock!\n")
@@ -199,7 +210,7 @@ class Player:
                 self.inventory.add_item("Towel")
                 self.item_grabbed.append("Towel")
             else:
-                print("\nYou already got the towel\n")
+                print("\nYou already collected the towel\n")
 
         elif self.current_room == "RoofP2":
             if "Dead clock" not in self.item_grabbed:
@@ -207,7 +218,7 @@ class Player:
                 self.inventory.add_item("Dead clock")
                 self.item_grabbed.append("Dead clock")
             else:
-                print("\nYou already got the Dead clock\n")
+                print("\nYou already collected the Dead clock\n")
 
         elif self.current_room == "Cafeteria":
             if "Water bottle" not in self.item_grabbed:
@@ -215,7 +226,7 @@ class Player:
                 self.item_grabbed.append("Water bottle")
                 print("\nYou have grabbed a Water bottle!\n")
             else:
-                print("\nYou already got the water bottle\n")
+                print("\nYou already collected the water bottle\n")
         
         elif self.current_room == "SecondFloorLH":
             if "Money" not in self.item_grabbed:
@@ -223,7 +234,8 @@ class Player:
                 self.item_grabbed.append("Money")
                 print("\nYou walked up to the plant and you realize it's leaves are made of cash. I guess money really does grow on trees.\n")
             else:
-                print("\nYou already got the money from the tree\n")
+                print("\nYou already collected the money from the tree\n")
+
         else:
             print("\nThere is nothing to grab in here\n")
         
@@ -262,12 +274,14 @@ class Player:
             if direction not in ["use", "grab", "inventory", "controls", "save", "load", "quit"]:
                 print("\nYou cannot go that direction\n")
             return 
+            
         self.current_room = connections[self.current_room][direction]
         locations = ["MainArea", "Outside", "Store", "Gym", "Cafeteria", "English", "Stairs", "Stairs2", "Stairs3",
                     "SecondFloor", "SecondFloorP2", "Outside2", "Math", "Science", "ThirdFloor", "ThirdFloorP2",
                     "Ladder", "Office", "Physical", "Roof", "RoofP2", "SecondFloorLH", "SecondFloorRH", "ThirdFloorRH", "Janitor", "ThirdFloorLH"]
         if self.current_room in locations:
             print(eval(self.current_room))
+
             if self.current_room == "Physical" and "Physical Ticket" not in self.item_grabbed:
                 physical_teacher = Teacher("Mr. Strong", "Physical")
                 ticket = physical_teacher.ask_question()
@@ -275,6 +289,7 @@ class Player:
                     self.inventory.add_item(ticket)
                     self.item_grabbed.append(ticket)
                     print(f"\nYou have collected the {ticket}!\n")
+
             elif self.current_room == "English" and "English Ticket" not in self.item_grabbed:
                 english_teacher = Teacher("Mr. Beakholt", "English")
                 ticket = english_teacher.ask_question()
@@ -282,6 +297,7 @@ class Player:
                     self.inventory.add_item(ticket)
                     self.item_grabbed.append(ticket)
                     print(f"\nYou have collected the {ticket}!\n")
+
             elif self.current_room == "Math" and "Math Ticket" not in self.item_grabbed:
                 math_teacher = Teacher("Mrs. S", "Math")
                 ticket = math_teacher.ask_question()
@@ -289,6 +305,7 @@ class Player:
                     self.inventory.add_item(ticket)
                     self.item_grabbed.append(ticket)
                     print(f"\nYou have collected the {ticket}!\n")
+
             elif self.current_room == "Science" and "Science Ticket" not in self.item_grabbed:
                 science_teacher = Teacher("Mrs. T", "Science")
                 ticket = science_teacher.ask_question()
@@ -309,23 +326,27 @@ class Teacher:
         if self.subject == "Math":
             question = f"{self.name} asks: What is 9 + 3?\n"
             correct_answer = "12"
+
         elif self.subject == "Science":
             question = f"{self.name} asks: What is the color of the sky?\n"
             correct_answer = "blue"
+
         elif self.subject == "English":
             question = f"{self.name} asks: What is the correct form of there/they're/their as it is used in this sentence. That is ____ candy that they stole from the superstore.\n"
             correct_answer = "their"
+
         elif self.subject == "Physical":
             question = f"{self.name} asks: how many holes does a bowling ball have?\n"
             correct_answer = "3"
+
         else:
             question = f"{self.name} asks: Answer\n"
             correct_answer = ""
 
         while True:
-            answer = input(question)
+            answer = input(question).lower()
             if answer.lower() == correct_answer.lower():
-                print("Correct!")
+                print("\nCorrect!")
                 return f"{self.subject} Ticket"
                 break
             else:
@@ -334,29 +355,29 @@ class Teacher:
 
 # rooms and definitions
 Outside = Room("Outside", "You are outside of school looking up at the building regretting showing up, you can go into the school or try to leave.")
-MainArea = Room("MainArea", "You are in the main area, there are lunch tables with people working in the cafeteria in front of you. You can see the stairs to the right of cafeteria. You see a store to your left that sells various items that may help you get through the day. To your right you can see the gym.")
+MainArea = Room("MainArea", "You are in the main area, there are lunch tables with people working in the cafeteria in front of you.\nYou can see the stairs to the right of cafeteria. You see a store to your left that sells various items that may help you get throughout the day. To your right you can see the gym.")
 Store = Room("Store", "There is mostly junk in here but they do have gummies you can buy. You see a clock on the wall out of the corner of your eye.")
-Gym = Room("Gym", "You enter the gym which is full of equipment and there is someone doing calf raises in the corner, they look thirsty. You also see your first period class P.E. in front of you. The main area is to your left.")
-English = Room("English class", "You enter your English class where the teacher is reciting Shakespear and running over everyone in his electric wheel chair. There is a clock very low on the wall so your teacher can check the time without looking up.")
+Gym = Room("Gym", "You enter the gym which is full of equipment and there is someone doing calf raises in the corner, they look thirsty. You also see your first period class P.E. in front of you.\nThe main area is to your left.")
+English = Room("English class", "You enter your English class where the teacher is reciting Shakespear and running over everyone in his electric wheel chair.\nThere is a clock very low on the wall so your teacher can check the time without looking up.")
 Stairs = Room("Stairs", "You are next to the stairs")
 Stairs2 = Room("Stairs", "You are next to the stairs on the second floor")
 Stairs3 = Room("Stairs", "You are next to the stairs on the third floor")
-Cafeteria = Room("Cafeteria", "You are in the cafeteria where many people are sitting before class begins, there appears to be an unattended water bottle on the table. The stairs are to your right and the store is to your left.")
-SecondFloor = Room("Second Floor", "You are on the second floor, there isn't much here besides two halls of classes and a lot of windows. Your math class is in the right hall. Your science class is in the left hallway. The stairs and the outside area are in front of you.")
+Cafeteria = Room("Cafeteria", "You are in the cafeteria where many people are sitting before class begins, there appears to be an unattended water bottle on the table.\nThe stairs are to your right and the store is to your left.")
+SecondFloor = Room("Second Floor", "You are on the second floor, there isn't much here besides two halls of classes and a lot of windows. Your math class is in the right hall.\nYour science class is in the left hallway. The stairs and the outside area are in front of you.")
 SecondFloorP2 = Room("Between outside area and stairs", "The outside area is in front of you and the stairs are to your right")
 Outside2 = Room("Outside area", "You are outside on the second floor, maybe if you try to leave from here no one will notice?")
-Math = Room("Math class", "You enter Math class where there are a bunch of cheesy math jokes on the wall and the board is covered in formulas beyond comprehension. There is a clock in here as well but it seems to be covered in math posters.")
-Science = Room("Science class", "You enter science with your teacher who looks like modern day Einstein mixing chemicals that are bubbling a little to much. There is another clock in here but it is covered in chemicals which are probably dangerous to touch.")
+Math = Room("Math class", "You enter Math class where there are a bunch of cheesy math jokes on the wall and the board is covered in formulas beyond comprehension.\nThere is a clock in here as well that has formulas written all over it.")
+Science = Room("Science class", "You enter science with your teacher who looks like modern day Einstein mixing chemicals that are bubbling a little to much.\nThere is another clock in here but it is covered in chemicals which are probably dangerous to touch.")
 ThirdFloor = Room("Third Floor", "You enter the third floor where the office and stairs are in front of you, your English class is in the left hallway and the ladder to the roof is in the right hallway")
 ThirdFloorP2 = Room("Between office and stairs", "The stairs are to your right and the office is to your left.")
-Ladder = Room("Ladder", "There is a ladder that goes to the roof, the only problem is you need a key to access the roof")
+Ladder = Room("Ladder", "There is a ladder that goes to the roof.")
 Office = Room("Office", "You enter the office where the principle and vice principle are haning out, there is a clock on the wall. You can exchange 4 good student tickets for a battery")
-Physical = Room("P.E", "You enter P.E. and you find your teacher pushing the ground down in order to do a push-up.")
-Roof = Room("Roof", "You manage to get onto the roof, there is nothing up here besides a vent to your left.")
+Physical = Room("P.E", "You enter P.E. and you find your teacher pushing the ground down in order to do a push-up. There is a clock on the wall")
+Roof = Room("Roof", "You manage to get onto the roof, there is nothing up here besides a vent to your left. You can go back down the ladder to the third floor from here")
 RoofP2 = Room ("Roof by vent", "You walk over to the other side of the vent and there is a clock on the floor.")
 vent = Room("Behind vent", "There is a clock on the floor but it seems to out of batteries")
 SecondFloorLH = Room("Left Hallway", "You are in the left hall of the second floor, your science class is in front of you. There seems to be something funny with the plant next to the classroom.")
 SecondFloorRH = Room("Right Hallway", "You are in the right hall of the second floor, your second class is back behind you.")
 ThirdFloorRH = Room("Right Hallway", "You are in the right hall of the third floor, there is a ladder in front of you and the janitors closet behind you. The bully is here and seems interested in a trade.")
-ThirdFloorLH = Room("Left Hallway", "You are in the left hall of the third floor, your fourth class is back behind you.")
+ThirdFloorLH = Room("Left Hallway", "You are in the left hall of the third floor, your English class is back behind you.")
 Janitor = Room ("Janitor's closet", "You are in the janitor's closet where there are a bunch of cleaning supplies and a towel.")

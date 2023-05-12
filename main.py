@@ -17,7 +17,8 @@ while True:
             clock_message_printed = True
 
         if player.current_room == "Outside":
-            done = input("\nYou have escaped! Would you like to quit? (quit)\n").lower()
+            print("\n\nYOU HAVE ESCAPED!\n\n")
+            done = input("\nWould you like to quit? (quit)\n").lower()
             if done == "quit":
                 break
 
